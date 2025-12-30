@@ -1,11 +1,11 @@
 const express = require('express'); // Express HTTP API
 const validator = require('validator'); //Validator library for string sanitation
 const sqlite3 = require('sqlite3').verbose(); // Import SQLite
+const crypto = require('crypto'); //Crypto module
 
 const app = express();
 const PORT = 3000;
-
-// DB
+// This creates a file named 'database.db' in your project folder
 const db = new sqlite3.Database('./database.db', (err) => {
     if (err) {
         console.error("Error opening database " + err.message);
@@ -14,34 +14,20 @@ const db = new sqlite3.Database('./database.db', (err) => {
         
         // Create a table if it doesn't exist
         db.run(`CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT
+            id TEXT PRIMARY KEY,
+            name TEXT,
+            created_at TEXT,
+            data_hash TEXT
         )`);
     }
 });
 
+
 // Middleware
-// This line tells Express to read the "body" of the request (JSON)
-// If this is missing or below the routes, req.body will be undefined.
-app.use(express.json());
-// This tells Express to serve the files in the 'public' folder
-// (HTML, CSS, JS) as if they were a normal website.
-app.use(express.static('public'));
+app.use(express.json()); // If this is missing or below the routes, req.body will be undefined.
+app.use(express.static('public')); // This tells Express to serve the files in the 'public' folder as if they were a normal website.
 
 // Routes
-// When the frontend requests '/api/message', we run this function.
-app.get('/api/message', (req, res) => {
-    const messages = [
-        "Hello from the server!",
-        "Node.js is cool!",
-        "You are doing great!",
-        "Servers are fun."
-    ];
-
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-    res.json({text:randomMessage});
-});
-
 /*
 //Request profile information via API
 app.get('/api/profile', (req, res) => {
@@ -51,12 +37,13 @@ app.get('/api/profile', (req, res) => {
     }
     const sanitizedInput = validator.escape(userInput.trim());
     res.json({text:sanitizedInput});
-})*/
+})
+*/
 
+// GET all names
 app.get('/api/names', (req, res) => {
-    const sql = "SELECT * FROM users ORDER BY id DESC";
-    // db.all runs the query and returns all rows
-    db.all(sql, [], (err, rows) => {
+    // Order by ID descending (newest first)
+    db.all("SELECT * FROM users ORDER BY created_at DESC", [], (err, rows) => {
         if (err) {
             return res.status(400).json({ error: err.message });
         }
@@ -64,41 +51,41 @@ app.get('/api/names', (req, res) => {
     });
 });
 
+// POST (Save Name)
 app.post('/api/greet', (req, res) => {
-    var userInput = '';
-    try{
-        userInput = req.body.name;
-    } catch(e){
-        console.error(e)
-    }
+    const userInput = req.body.name;
 
-    if (!userInput) {
-        return res.status(400).json({ error: "Name is required" });
-        //return res.status(400).json({ error: "ProfileID is required" });
-    }
+    // Collect values
+    if (!userInput) return res.status(400).json({ error: "Name is required" });
 
-    const sanitizedInput = validator.whitelist(validator.escape(userInput.trim()),'^[a-zA-Z0-9_-]*$') //RegExp for Most Chars
-    const sql = "INSERT INTO users (name) VALUES (?)";
-    const params = [sanitizedInput];
+    let uuid = crypto.randomUUID();
+    const sanitizedName = validator.whitelist(validator.escape(userInput.trim()),'^[a-zA-Z0-9_-]*$');
+    const timestamp = new Date().toISOString();
 
-    // db.run executes the SQL
+    // Create a Cryptographic Hash
+    const combinedString = sanitizedName + timestamp;
+    const hash = crypto.createHash('sha256').update(combinedString).digest('hex');
+
+    // 5. Insert into Database
+    const sql = "INSERT INTO users (id, name, created_at, data_hash) VALUES (?, ?, ?, ?)";
+    //const sql = "INSERT INTO users (userid, name, created_at, data_hash) VALUES (?, ?, ?, ?)";
+    const params = [uuid, sanitizedName, timestamp, hash];
+
     db.run(sql, params, function (err) {
         if (err) {
             return res.status(400).json({ error: err.message });
         }
         
-        // 'this.lastID' gives us the ID of the row we just created
         res.json({ 
-            message: `Saved ${sanitizedInput} to database!`,
+            message: `Saved ${sanitizedName} to database!`,
             id: this.lastID,
-            sanitized: sanitizedInput
+            created_at: timestamp,
+            hash: hash
         });
     });
-    //DEBUG console.log(`Input received: ${sanitizedInput}`)
-    res.json({message:sanitizedInput}); //Response
-})
+});
 
-// Start the Server
+
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
 });
