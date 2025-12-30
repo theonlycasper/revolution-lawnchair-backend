@@ -8,24 +8,25 @@
 </head>
 <body>
     <div class="container">
-        <h1>Node.js & Express Demo</h1>
+        <h1>Node.js + SQLite Demo</h1>
         
-        <!-- Section 1: Random Message -->
+        <!-- Section 1: Save Data -->
         <div class="section">
-            <h3>Random Message</h3>
-            <button id="msgButton">Get Message</button>
-            <p id="msg-response">Waiting...</p>
+            <h3>Add Name to DB</h3>
+            <input type="text" id="nameInput" placeholder="Enter your name">
+            <button id="sendButton">Save Name</button>
+            <p id="input-response">Waiting...</p>
         </div>
 
         <hr>
 
-        <!-- Section 2: User Input -->
+        <!-- Section 2: View Data -->
         <div class="section">
-            <h3>Send Your Name</h3>
-            <!-- Try typing: <script>alert('hack')</script> -->
-            <input type="text" id="nameInput" placeholder="Enter your name">
-            <button id="sendButton">Send to Server</button>
-            <p id="input-response">Waiting...</p>
+            <h3>Database Records</h3>
+            <button id="loadButton">Load Names</button>
+            <ul id="names-list" style="text-align: left; margin-top: 15px;">
+                <!-- Names will appear here -->
+            </ul>
         </div>
     </div>
 
