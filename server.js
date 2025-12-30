@@ -14,8 +14,9 @@ const db = new sqlite3.Database('./database.db', (err) => {
         
         // Create a table if it doesn't exist
         db.run(`CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY,
-            name TEXT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            password_hash TEXT,
             created_at TEXT,
             data_hash TEXT
         )`);
@@ -51,37 +52,53 @@ app.get('/api/names', (req, res) => {
     });
 });
 
-// POST (Save Name)
-app.post('/api/greet', (req, res) => {
-    const userInput = req.body.name;
+// POST (Register User)
+app.post('/api/register', async (req, res) => {
+    const { name, password } = req.body;
 
-    // Collect values
-    if (!userInput) return res.status(400).json({ error: "Name is required" });
-
-    let uuid = crypto.randomUUID();
-    const sanitizedName = validator.whitelist(validator.escape(userInput.trim()),'^[a-zA-Z0-9_-]*$');
+    if (!name || !password) {
+        return res.status(400).json({ error: "Name and Password are required" });
+    }
+    const sanitizedName = validator.whitelist(validator.escape(name.trim()),'^[a-zA-Z0-9_-]*$');
+    const sanitizedPass = validator.whitelist(validator.escape(password.trim()),'^[a-zA-Z0-9_-]*$');
     const timestamp = new Date().toISOString();
 
-    // Create a Cryptographic Hash
-    const combinedString = sanitizedName + timestamp;
-    const hash = crypto.createHash('sha256').update(combinedString).digest('hex');
+    // Hash the Password
+    const hashedPassword = crypto.createHash('sha256').update(sanitizedName + sanitizedPass + timestamp).digest('hex');
 
-    // 5. Insert into Database
-    const sql = "INSERT INTO users (id, name, created_at, data_hash) VALUES (?, ?, ?, ?)";
-    //const sql = "INSERT INTO users (userid, name, created_at, data_hash) VALUES (?, ?, ?, ?)";
-    const params = [uuid, sanitizedName, timestamp, hash];
+    // Create the integrity hash (Name + Time) - we don't include password here usually
+    const integrityHash = crypto.createHash('sha256').update(sanitizedName + timestamp).digest('hex');
+
+    const sql = "INSERT INTO users (username, password_hash, created_at, data_hash) VALUES (?, ?, ?, ?)";
+    const params = [sanitizedName, hashedPassword, timestamp, integrityHash];
 
     db.run(sql, params, function (err) {
-        if (err) {
-            return res.status(400).json({ error: err.message });
-        }
+        if (err) return res.status(400).json({ error: err.message });
         
         res.json({ 
-            message: `Saved ${sanitizedName} to database!`,
-            id: this.lastID,
-            created_at: timestamp,
-            hash: hash
+            message: `User ${sanitizedName} registered!`,
+            id: this.lastID
         });
+    });
+});
+
+app.post('/api/login', (req, res) => {
+    const { name, password } = req.body;
+    
+    // Find the user by name
+    db.get("SELECT * FROM users WHERE username = ?", [name], async (err, user) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!user) return res.status(400).json({ error: "User not found" });
+
+        const sanitizedName = validator.whitelist(validator.escape(name.trim()),'^[a-zA-Z0-9_-]*$');
+        const sanitizedPass = validator.whitelist(validator.escape(password.trim()),'^[a-zA-Z0-9_-]*$');
+        // Compare the plain password with the stored hash
+        const match = crypto.createHash('sha256').update(sanitizedName + sanitizedPass + user.created_at).digest('hex');
+        if (match == user.password_hash){
+            res.json({ success: true, message: "Login Successful! Welcome back." });
+        } else {
+            res.json({ success: false, message: "Invalid Password." });
+        }
     });
 });
 

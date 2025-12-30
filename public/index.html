@@ -3,33 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revolution Lawnchair</title>
+    <title>Node Security Demo</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Node.js + SQLite Demo</h1>
+        <h1>Node.js + SQLite</h1>
         
-        <!-- Section 1: Save Data -->
+        <!-- Register -->
         <div class="section">
-            <h3>Add Name to DB</h3>
-            <input type="text" id="nameInput" placeholder="Enter your name">
-            <button id="sendButton">Save Name</button>
-            <p id="input-response">Waiting...</p>
+            <h3>1. Register User</h3>
+            <input type="text" id="regName" placeholder="Username">
+            <input type="password" id="regPass" placeholder="Password">
+            <button id="btnRegister">Register</button>
+            <p id="regResponse">Waiting...</p>
         </div>
 
         <hr>
 
-        <!-- Section 2: View Data -->
+        <!-- Login -->
         <div class="section">
-            <h3>Database Records</h3>
-            <button id="loadButton">Load Names</button>
-            <ul id="names-list" style="text-align: left; margin-top: 15px;">
-                <!-- Names will appear here -->
-            </ul>
+            <h3>2. Login (Test Password)</h3>
+            <input type="text" id="loginName" placeholder="Username">
+            <input type="password" id="loginPass" placeholder="Password">
+            <button id="btnLogin">Login</button>
+            <p id="loginResponse">Waiting...</p>
+        </div>
+
+        <hr>
+
+        <!-- View Data -->
+        <div class="section">
+            <h3>3. Public User List</h3>
+            <button id="btnLoad">Refresh List</button>
+            <ul id="userList" style="text-align: left; margin-top: 15px;"></ul>
         </div>
     </div>
-
     <script src="client.js"></script>
 </body>
 </html>

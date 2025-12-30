@@ -1,47 +1,72 @@
-const sendButton = document.getElementById('sendButton');
-const nameInput = document.getElementById('nameInput');
-const inputResponse = document.getElementById('input-response');
-const loadButton = document.getElementById('loadButton');
-const namesList = document.getElementById('names-list');
+// --- Elements ---
+const regName = document.getElementById('regName');
+const regPass = document.getElementById('regPass');
+const btnRegister = document.getElementById('btnRegister');
+const regResponse = document.getElementById('regResponse');
 
-async function loadNames() {
+const loginName = document.getElementById('loginName');
+const loginPass = document.getElementById('loginPass');
+const btnLogin = document.getElementById('btnLogin');
+const loginResponse = document.getElementById('loginResponse');
+
+const userList = document.getElementById('userList');
+const btnLoad = document.getElementById('btnLoad');
+
+// --- 1. Register ---
+btnRegister.addEventListener('click', async () => {
+    const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            name: regName.value, 
+            password: regPass.value 
+        })
+    });
+    const data = await response.json();
+    regResponse.innerText = data.message || data.error;
+    loadUsers(); // Refresh list
+});
+
+// --- 2. Login ---
+btnLogin.addEventListener('click', async () => {
+    const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            name: loginName.value, 
+            password: loginPass.value 
+        })
+    });
+    const data = await response.json();
+    
+    if (data.success) {
+        loginResponse.style.color = "green";
+        loginResponse.innerText = "✅ " + data.message;
+    } else {
+        loginResponse.style.color = "red";
+        loginResponse.innerText = "❌ " + (data.message || data.error);
+    }
+});
+
+// --- 3. Load Users ---
+async function loadUsers() {
     const response = await fetch('/api/names');
     const result = await response.json();
-    
-    namesList.innerHTML = '';
+    userList.innerHTML = '';
 
     result.data.forEach(user => {
         const li = document.createElement('li');
-        
-        // Make the date look nice for the user (readable), 
-        // but remember the DB stores the strict ISO string.
-        const readableDate = new Date(user.created_at).toLocaleString();
-
+        // NOTE: We do NOT send the password hash to the frontend.
+        // It's a security best practice to keep hashes on the server only.
         li.innerHTML = `
-            <strong>${user.name}</strong> <br>
-            <small>Date: ${readableDate}</small> <br>
-            <small>ID: ${user.id}</small> <br>
-            <small style="color: #666; font-family: monospace;">Hash: ${user.data_hash}</small>
+            <strong>${user.username}</strong> <br>
+            <small>Joined: ${new Date(user.created_at).toLocaleString()}</small>
         `;
-        li.style.marginBottom = "10px";
         li.style.borderBottom = "1px solid #ddd";
-        namesList.appendChild(li);
+        li.style.marginBottom = "5px";
+        userList.appendChild(li);
     });
 }
 
-sendButton.addEventListener('click', async () => {
-    const nameText = nameInput.value;
-
-    const response = await fetch('/api/greet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: nameText })
-    });
-
-    const data = await response.json();
-    inputResponse.innerText = data.message;
-    loadNames();
-});
-
-loadButton.addEventListener('click', loadNames);
-loadNames();
+// Initial Load
+loadUsers();
