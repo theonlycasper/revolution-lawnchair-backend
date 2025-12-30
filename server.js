@@ -1,14 +1,13 @@
-// 1. Import Express
-const express = require('express');
+const express = require('express'); // Express HTTP API
+const validator = require('validator'); //Validator library for string sanitation
 const app = express();
 const PORT = 3000;
 
-// 2. Serve Static Files
 // This tells Express to serve the files in the 'public' folder
 // (HTML, CSS, JS) as if they were a normal website.
 app.use(express.static('public'));
 
-// 3. Create an API Endpoint
+// API Endpoint
 // When the frontend requests '/api/message', we run this function.
 app.get('/api/message', (req, res) => {
     const messages = [
@@ -18,14 +17,32 @@ app.get('/api/message', (req, res) => {
         "Servers are fun."
     ];
 
-    // Pick a random message
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-
-    // Send it back to the frontend as JSON
-    res.json({ text: randomMessage });
+    res.json({text:randomMessage});
 });
 
-// 4. Start the Server
+/*
+//Request profile information via API
+app.get('/api/profile', (req, res) => {
+    const userInput = req.body.name;
+    if (!userInput) {
+        return res.status(400).json({ error: "ProfileID is required" });
+    }
+    const sanitizedInput = validator.escape(userInput.trim());
+    res.json({text:sanitizedInput});
+})*/
+
+app.post('/api/greet', (req, res) => {
+    const userInput = req.body.name;
+    if (!userInput) {
+        return res.status(400).json({ error: "ProfileID is required" });
+    }
+    const sanitizedInput = validator.escape(userInput.trim());
+    const allowedInput = validator.whitelist(sanitizedInput,'^[a-zA-Z0-9_-]*$') //RegExp for Most Chars
+    res.json({text:allowedInput});
+})
+
+// Start the Server
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
 });
