@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: revolution
+    ports:
+      - "3000:3000"
+    # Loads the variables from your local .env file
+    env_file:
+      - .env
+    # Persist the SQLite database file so data survives restarts
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    # Environment overrides (optional, ensures DB path matches volume)
+    environment:
+      - DB_PATH=/app/data/database.sqlite

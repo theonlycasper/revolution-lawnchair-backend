@@ -10,7 +10,7 @@ const crypto = require('crypto'); //Crypto module
 const app = express();
 const PORT = 3000;
 // This creates a file named 'database.db' in your project folder
-const db = new sqlite3.Database(process.env.DB_PATH, (err) => {
+const db = new sqlite3.Database(process.env.DB_PATH || './database.db', (err) => {
     if (err) {
         console.error("Error opening database " + err.message);
     } else {
@@ -23,7 +23,8 @@ const db = new sqlite3.Database(process.env.DB_PATH, (err) => {
             password_hash TEXT,
             created_at TEXT,
             last_login TEXT,
-            data_hash TEXT
+            data_hash TEXT,
+            display_name TEXT
         )`);
     }
 });
@@ -40,7 +41,7 @@ app.use(session({
         // 3. Use NODE_ENV to determine if we are in production
         secure: process.env.NODE_ENV === 'production', 
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 
+        maxAge: 1000 * 60 * process.env.SESSION_TIME //1 Hour Session Time 
     }
 }));
 
@@ -48,12 +49,9 @@ app.use(session({
 // Routes
 
 /* TODO
-
 - /api/register should require some kind of verification to prevent the mass creation of user accounts.
 - /api/login should log the latest date of login.
 - /api/login should store a session token that can be exchanged for information within 15-20 minutes of its creation.
-- /api/me should 
-
 */
 
 /*
@@ -132,7 +130,7 @@ app.post('/api/login', (req, res) => {
                 // SESSION: Store user ID in the session
                 req.session.userId = user.id;
                 req.session.username = user.username;
-
+                req.session.displayname = user.display_name
                 return res.json({ success: true, message: "Login Successful!" });
             } else {
                 return res.status(401).json({ error: "Invalid credentials" });
