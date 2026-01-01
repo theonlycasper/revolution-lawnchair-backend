@@ -1,4 +1,4 @@
-# Express Auth Server
+# Revolution Backend
 
 A basic Express.js server featuring secure session-based authentication using **Argon2** password hashing and **SQLite**.
 
