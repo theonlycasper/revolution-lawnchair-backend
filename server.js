@@ -54,17 +54,23 @@ app.use(session({
 - /api/login should store a session token that can be exchanged for information within 15-20 minutes of its creation.
 */
 
-/*
+
 //Request profile information via API
 app.get('/api/me', (req, res) => {
-    const userInput = req.body.name;
-    if (!userInput) {
-        return res.status(400).json({ error: "ProfileID is required" });
+    const userId = req.session.userId;
+    if (!userId) {
+        return res.status(400).json({ error: "User has not logged in." });
     }
-    const sanitizedInput = validator.escape(userInput.trim());
+    db.all("SELECT * FROM users WHERE id = ? LIMIT 1", [userId], (err, rows) => {
+        if (err) {
+            return res.status(400).json({ error: err.message });
+        }
+        console.log(rows[0]);
+        res.json({data:rows});
+    });
     res.json({text:sanitizedInput});
 })
-*/
+
 
 // GET all names
 app.get('/api/names', (req, res) => {
@@ -73,7 +79,7 @@ app.get('/api/names', (req, res) => {
         if (err) {
             return res.status(400).json({ error: err.message });
         }
-        res.json({ data: rows });
+        res.json({data:rows});
     });
 });
 

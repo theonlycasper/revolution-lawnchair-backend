@@ -1,12 +1,16 @@
 body {
     font-family: sans-serif;
-    background-color: #f4f4f9;
+    background-color: #1a0000;
+    background-image: linear-gradient(to bottom, #790000, #1a0000);
+    background-size: cover; 
+    background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     padding-top: 50px;
 }
 .container {
-    background: white;
+    background: #1010107d;
+    color: white;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -14,7 +18,7 @@ body {
 }
 button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #8a0000;
     color: white;
     border: none;
     border-radius: 5px;
@@ -22,10 +26,27 @@ button {
     font-size: 16px;
 }
 button:hover {
-    background-color: #0056b3;
+    background-color: #480000;
 }
 #response-area {
 margin-top: 20px;
 font-weight: bold;
 color: #333;
+}
+
+/*
+Source - https://stackoverflow.com/a
+Posted by ProfDFrancis, modified by community. See post 'Timeline' for change history
+Retrieved 2026-01-01, License - CC BY-SA 4.0
+*/
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
 }

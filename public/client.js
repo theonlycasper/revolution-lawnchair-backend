@@ -24,7 +24,6 @@ btnRegister.addEventListener('click', async () => {
     });
     const data = await response.json();
     regResponse.innerText = data.message || data.error;
-    loadUsers(); // Refresh list
 });
 
 // --- 2. Login ---
@@ -42,6 +41,7 @@ btnLogin.addEventListener('click', async () => {
     if (data.success) {
         loginResponse.style.color = "green";
         loginResponse.innerText = "✅ " + data.message;
+        loadUsers();
     } else {
         loginResponse.style.color = "red";
         loginResponse.innerText = "❌ " + (data.message || data.error);
@@ -49,8 +49,12 @@ btnLogin.addEventListener('click', async () => {
 });
 
 // --- 3. Load Users ---
+btnLoad.addEventListener('click', async () => {
+    loadUsers();
+});
+
 async function loadUsers() {
-    const response = await fetch('/api/names');
+    const response = await fetch('/api/me');
     const result = await response.json();
     userList.innerHTML = '';
 
@@ -103,5 +107,3 @@ async function loadUserProfile() {
     userList.appendChild(profileCard);
 }
 */
-// Initial Load
-loadUsers();

@@ -8,14 +8,25 @@
 </head>
 <body>
     <div class="container">
-        <h1>Node.js + SQLite</h1>
+        <h1>Revolution Lawnchair</h1>
         
         <!-- Register -->
         <div class="section">
-            <h3>Register User</h3>
-            <input type="text" id="regName" placeholder="Username">
-            <input type="password" id="regPass" placeholder="Password">
-            <button id="btnRegister">Register</button>
+            <div class="flex-container">
+                <h3>Register User</h3>
+            </div>
+            <div class="flex-container">
+                <div class="flex-column">
+                    <input type="text" id="regName" placeholder="Username">
+                    <input type="password" id="regPass" placeholder="Password">
+                </div>
+                <div class="flex-column">
+                    ​
+                </div>
+                <div class="flex-column">
+                    <button id="btnRegister">Register</button>
+                </div>
+            </div>
             <p id="regResponse"></p>
         </div>
 
@@ -23,10 +34,21 @@
 
         <!-- Login -->
         <div class="section">
-            <h3>Login (Test Password)</h3>
-            <input type="text" id="loginName" placeholder="Username">
-            <input type="password" id="loginPass" placeholder="Password">
-            <button id="btnLogin">Login</button>
+            <div class="flex-container">
+                <h3>Login (Check Account Status)</h3>
+            </div>
+            <div class="flex-container">
+                <div class="flex-column">
+                    <input type="text" id="loginName" placeholder="Username">
+                    <input type="password" id="loginPass" placeholder="Password">
+                </div>
+                <div class="flex-column">
+                    ​​
+                </div>
+                <div class="flex-column">
+                    <button id="btnLogin" style="padding: 10px 30px;">Login</button>
+                </div>
+            </div>
             <p id="loginResponse"></p>
         </div>
 
@@ -34,10 +56,15 @@
 
         <!-- View Data -->
         <div class="section">
-            <h3>Current User
-                <button id="btnLoad">&#x21bb;</button>
-            </h3>
-            <ul id="userList" style="text-align: left; margin-top: 15px;"></ul>
+            <div class="flex-container">
+                <div class="flex-column">
+                    <h3>Current User</h3>
+                    <ul id="userList" style="text-align: left; margin-top: 15px;"></ul>
+                </div>
+                <div class="flex-column">
+                    <button id="btnLoad" style="padding: 10px 10px;">&#x21bb;</button>
+                </div>
+            </div>
         </div>
     </div>
     <script src="client.js"></script>
