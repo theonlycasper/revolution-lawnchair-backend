@@ -15,7 +15,7 @@ A basic Express.js server featuring secure session-based authentication using **
 - [Docker](https://www.docker.com/) (optional, for containerization)
 
 ## Configuration
-1. Create a `.env` file in the root directory:
+**1. Create a `.env` file in the root directory:**
 ```bash
 touch .env
 ```
