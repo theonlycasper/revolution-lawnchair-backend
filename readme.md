@@ -15,21 +15,17 @@ A basic Express.js server featuring secure session-based authentication using **
 - [Docker](https://www.docker.com/) (optional, for containerization)
 
 ## Configuration
-
 1. Create a `.env` file in the root directory:
-   ```bash
-   touch .env
-   ```
-
-2. Add the following variables to `.env`:
-   ```env
-   PORT=3000
-   SESSION_TIME=10 #in minutes
-   SESSION_SECRET=change_this_to_a_long_random_string
-   DB_PATH=./database.sqlite (Optional, depending on your DB setup)
-   ```
-
-
+```bash
+touch .env
+```
+**2. Add the following variables to `.env`:**
+```env
+PORT=3000
+SESSION_TIME=10 #in minutes
+SESSION_SECRET=change_this_to_a_long_random_string
+DB_PATH=./database.sqlite (Optional, depending on your DB setup)
+```
 ## Running the Server
 
 ### Local Development
@@ -125,12 +121,14 @@ docker run -p 3000:3000 --env-file .env revolution
     "changetype": "password",
     "password": "newPassword123"
   }
+  ```
 - **Body (Update Display Name):**
   ```json
   {
     "changetype": "displayname",
     "display_name": "Cool Alias"
   }
+  ```
 ### 5. Get User Details (Admin)
 - **URL:** `/api/admin/user/:username`
 - **Method:** `GET`
@@ -152,5 +150,6 @@ docker run -p 3000:3000 --env-file .env revolution
         "verified": true
     }
   }
+  ```
 ## License
 Free Use
