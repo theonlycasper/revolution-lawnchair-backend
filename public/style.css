@@ -34,6 +34,20 @@ font-weight: bold;
 color: #333;
 }
 
+.profile-group {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #1c1c1c7d;
+}
+.status-badge {
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.status-active { background-color: #d4edda; color: #155724; }
+.status-inactive { background-color: #f8d7da; color: #721c24; }
+
 /*
 Source - https://stackoverflow.com/a
 Posted by ProfDFrancis, modified by community. See post 'Timeline' for change history

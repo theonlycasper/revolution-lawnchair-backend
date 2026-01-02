@@ -21,9 +21,6 @@
                     <input type="password" id="regPass" placeholder="Password">
                 </div>
                 <div class="flex-column">
-                    ​
-                </div>
-                <div class="flex-column">
                     <button id="btnRegister">Register</button>
                 </div>
             </div>
@@ -35,15 +32,12 @@
         <!-- Login -->
         <div class="section">
             <div class="flex-container">
-                <h3>Login (Check Account Status)</h3>
+                <h3>Login</h3>
             </div>
             <div class="flex-container">
                 <div class="flex-column">
                     <input type="text" id="loginName" placeholder="Username">
                     <input type="password" id="loginPass" placeholder="Password">
-                </div>
-                <div class="flex-column">
-                    ​​
                 </div>
                 <div class="flex-column">
                     <button id="btnLogin" style="padding: 10px 30px;">Login</button>
@@ -53,26 +47,45 @@
         </div>
 
         <hr>
-
-        <!-- View Data -->
-        <div class="section">
-            <div class="flex-container">
-                <div class="flex-column">
-                    <h3>Current User</h3>
-                </div>
-                <div class="flex-column">
-                    <button id="btnLoad" style="padding: 10px 10px;">&#x21bb;</button>
-                </div>
-            </div>
-            <div class="flex-container">
-                <ul id="userList" style="text-align: left; margin-top: 5px;"></ul>
-            </div>
+        <div class="flex-container">
+                <h3>User Profile</h3>
+                <button id="btnRefreshProfile" style="padding: 5px 10px;">&#x21bb; Refresh</button>
         </div>
+        <!-- User Profile Dashboard (Hidden until Logged In) -->
+        <div id="profileSection" class="section" style="display: none;">
+            
+            <!-- Profile Info -->
+            <div class="profile-group">
+                <p><strong>Display Name:</strong> <span id="pUsername"></span></p>
+                <p><strong>Status:</strong> <span id="pStatus"></span></p>
+                <p><strong>Member Since:</strong> <span id="pJoined"></span></p>
+            </div>
 
-        <hr>
-        
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="admin.html">Go to Admin Panel</a>
+            <!-- Update Display Name -->
+            <div class="profile-group">
+                <h4>Update Display Name</h4>
+                <div class="flex-container">
+                    <input type="text" id="updateDisplayName" placeholder="New Display Name">
+                    <button id="btnUpdateName" style="padding: 10px 20px;">Update</button>
+                </div>
+            </div>
+
+            <!-- Update Password -->
+            <div class="profile-group">
+                <h4>Update Password</h4>
+                <div class="flex-container">
+                    <input type="password" id="updatePassword" placeholder="New Password">
+                    <button id="btnUpdatePass" style="padding: 10px 20px;">Update</button>
+                </div>
+            </div>
+            
+            <p id="profileMessage" style="font-weight: bold;"></p>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button style="padding: 10px 20px;">
+                    <a href="admin.html" style="color: white;">Go to Admin Panel</a>
+                </button>
+            </div>
         </div>
     </div>
     <script src="client.js"></script>

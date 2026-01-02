@@ -52,15 +52,6 @@ app.use(session({
 
 // Routes
 
-/* TODO
-DONE - /api/register should require some kind of verification to prevent the mass creation of user accounts.
-DONE - /api/login should log the latest date of login.
-DONE - /api/me/update should allow the user to change their display name
-DONE - Update public JS to use display name instead of username
-PENDING - Recalculate hash on updating password and status
-*/
-
-
 //GET profile information via API with Session Token
 app.get('/api/me', requireAuth, (req, res) => {
     const userId = req.session.userId;
@@ -211,7 +202,13 @@ app.post('/api/login', (req, res) => {
 
         verifyUserIntegrity(user.id, async (err, wasPruned) => {
             if (err) {
-                return res.status(500).json({ error: "Error checking integrity" });
+                if (wasPruned)
+                {
+                    return res.status(500).json({ error: err });
+                }
+                else{
+                    return res.status(500).json({ error: "Error checking integrity" });
+                }
             }
 
             // If the function returned true, the user is gone. Stop logging in.
@@ -296,7 +293,7 @@ app.post('/api/update', requireAuth, (req, res) => {
             const requesterStatus = JSON.parse(row.status);
             
             // If strictly checks for boolean true
-            if (requesterStatus.admin !== true) {
+            if (requesterStatus.admin !== true && user.id !== 1) {
                 return res.status(403).json({ error: "Forbidden: You do not have admin privileges." });
             }
 
@@ -357,7 +354,7 @@ const verifyUserIntegrity = (userId, callback) => {
         const userstatus = JSON.parse(row.status)
         if (userstatus.status !== "ACTIVE"){
             const babble = "User was deactivated"
-            return callback(babble, false); 
+            return callback(babble, true); 
         }
         //Construct Hash
         const hashingJson = {"username":row.username,"password_hash":row.password_hash,"timestamp":row.created_at,"status":row.status}
@@ -408,7 +405,6 @@ function requireAuth(req, res, next) {
             req.session.destroy(); 
             return res.status(401).json({ error: "Invalid session token." });
         }
-
         // 5. Auth Success
         next();
     });
