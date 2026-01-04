@@ -279,12 +279,12 @@ app.post('/api/update', requireAuth, (req, res) => {
     const requesterId = req.session.userId;
     const { target_username, new_status } = req.body;
 
-    // 1. Basic Validation
+    // Basic Validation
     if (!target_username || !new_status) {
         return res.status(400).json({ error: "Target username and new status object are required." });
     }
 
-    // 2. Check if the REQUESTER is an Admin
+    // Check if the REQUESTER is an Admin
     db.get("SELECT status FROM users WHERE id = ?", [requesterId], (err, row) => {
         if (err) return res.status(500).json({ error: "Database error checking permissions." });
         if (!row) return res.status(401).json({ error: "User not found." });
@@ -293,18 +293,18 @@ app.post('/api/update', requireAuth, (req, res) => {
             const requesterStatus = JSON.parse(row.status);
             
             // If strictly checks for boolean true
-            if (requesterStatus.admin !== true && user.id !== 1) {
+            if (requesterStatus.admin !== true) {
                 return res.status(403).json({ error: "Forbidden: You do not have admin privileges." });
             }
 
-            // 3. Admin verified. Now fetch the TARGET user.
+            // Admin verified. Now fetch the TARGET user.
             const sani_target = validator.whitelist(validator.escape(target_username.trim()), '^[a-zA-Z0-9_-]*$');
 
             db.get("SELECT * FROM users WHERE username = ?", [sani_target], (err, targetUser) => {
                 if (err) return res.status(500).json({ error: "Database error finding target." });
                 if (!targetUser) return res.status(404).json({ error: "Target user not found." });
 
-                // 4. Prepare data for Integrity Hash Recalculation
+                // Prepare data for Integrity Hash Recalculation
                 // We must stringify the new status object to store it
                 let statusString;
                 try {
@@ -316,7 +316,7 @@ app.post('/api/update', requireAuth, (req, res) => {
                 const hashingJson = {"username": targetUser.username,"password_hash": targetUser.password_hash,"timestamp": targetUser.created_at,"status": statusString};
                 const newIntegrityHash = integrityHash(hashingJson);
 
-                // 5. Update the Database
+                // Update the Database
                 db.run("UPDATE users SET status = ?, data_hash = ? WHERE id = ?", 
                     [statusString, newIntegrityHash, targetUser.id], 
                     (updateErr) => {
